@@ -13,7 +13,7 @@ class Decoder:
 
     def decode(self, raw_terkep=None):
         if not raw_terkep:
-            raw_terkep = self.__class__.BASE / 'map_0.html'
+            raw_terkep = self.__class__.BASE / 'map_1.html'
         terkep = [self.sor_decode(sor) for sor in raw_terkep.read_text().split()[1:]]
 
         return terkep

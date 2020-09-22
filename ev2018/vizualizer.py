@@ -4,6 +4,7 @@ from tkinter import Tk, Label, Frame, Canvas
 from PIL import Image
 from PIL.ImageTk import PhotoImage
 
+from ev2018.cell import Cell
 from ev2018.field import Field
 from ev2018.route_finder import RouteFinder
 
@@ -16,9 +17,14 @@ class Vizualizer(Canvas):
 
         # getting the map
         Field.filder()
-        self.terkep = Field.get_map()
+        self.terkep = Cell.get_map()
         # self.routes = # TODO: find the routes
-        self.treasure_place = RouteFinder(self.terkep).treasure
+        route_finder = RouteFinder(self.terkep)
+        Cell.treasure_place = route_finder.treasure  # TODO: find the perfect place
+        route_finder.legrovidebb_utovonal()
+        route_finder.print_utvonal()
+
+        self.treasure_place = Cell.treasure_place
 
         self.field_colors = {"ocean": "#050bb5",
                              "tenger": "#2436bd",
@@ -52,19 +58,16 @@ class Vizualizer(Canvas):
 
     def draw_treasure(self):
         # X-version
-        self.create_line(x := self.treasure_place[0]*self.field_size, y := self.treasure_place[0]*self.field_size,
+        self.create_line(x := self.treasure_place.x*self.field_size, y := self.treasure_place.x*self.field_size,
                          x+self.field_size, y+self.field_size, fill='red', width=self.field_size//36)
-        self.create_line(x := self.treasure_place[0]*self.field_size,
-                         self.treasure_place[0]*self.field_size+self.field_size,
-                         x+self.field_size, self.treasure_place[0]*self.field_size, fill='red', width=self.field_size//36)
+        self.create_line(x := self.treasure_place.x*self.field_size,
+                         self.treasure_place.x*self.field_size+self.field_size,
+                         x+self.field_size, self.treasure_place.x*self.field_size, fill='red', width=self.field_size//36)
 
         # pic-version
         half = self.field_size // 2
-        self.create_image( self.treasure_place[0]*self.field_size+half, self.treasure_place[1]*self.field_size+half,
+        self.create_image(self.treasure_place.x*self.field_size+half, self.treasure_place.y*self.field_size+half,
                            image=self.treasure_picture)
-
-
-
 
     def draw_grids(self, color='black'):
         width = self.winfo_reqheight()
@@ -75,17 +78,17 @@ class Vizualizer(Canvas):
 
     def draw_field_colors(self):
         for i, sor in enumerate(self.terkep):
-            for j, field in enumerate(sor):
+            for j, cell in enumerate(sor):
                 self.create_rectangle(i*self.field_size, j*self.field_size,
-                                      (i+1)*self.field_size, (j+1)*self.field_size, fill=self.field_colors[field.nev])
+                                      (i+1)*self.field_size, (j+1)*self.field_size, fill=self.field_colors[cell.field.nev])
 
     def write_fields(self):
         half = self.field_size // 2
         betumeret = self.field_size // 6
         for i, sor in enumerate(self.terkep):
-            for j, field in enumerate(sor):
-                self.create_text(i * self.field_size + half, j * self.field_size + half, text=field.nev,
-                                 fill=self.field_font_colors[field.nev], font=("sans-sheriff", betumeret))
+            for j, cell in enumerate(sor):
+                self.create_text(i * self.field_size + half, j * self.field_size + half, text=cell.field.nev,
+                                 fill=self.field_font_colors[cell.field.nev], font=("sans-sheriff", betumeret))
 
 
 class BaseFrame(Frame):
