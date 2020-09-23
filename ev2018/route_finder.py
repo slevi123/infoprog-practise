@@ -26,7 +26,6 @@ class RouteFinder:
                 current = current.parent
 
     def legrovidebb_utovonal(self):
-        terkep_meret = len(self.terkep)
         self.init_cell_costs()
         open_list = [self.terkep[0][0]]
         closed_list = []
