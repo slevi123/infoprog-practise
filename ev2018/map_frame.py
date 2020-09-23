@@ -1,6 +1,5 @@
 from pathlib import Path
-from tkinter import Tk, Label, Frame, Canvas, IntVar
-from tkinter.ttk import Checkbutton
+from tkinter import Canvas
 
 from PIL import Image
 from PIL.ImageTk import PhotoImage
@@ -8,27 +7,9 @@ from PIL.ImageTk import PhotoImage
 from ev2018.cell import Cell
 from ev2018.field import Field
 from ev2018.route_finder import RouteFinder
-from ev2018.routes_check_frame import RoutesCheckFrame
 
 
-class MapSettingFrame(Frame):
-    def __init__(self, root, canvas):
-        super().__init__(root)
-        self.canvas = canvas
-
-        self.field_names_state = IntVar()
-        self.field_names_state.set(1)
-        Checkbutton(self, text="Mező nevek", variable=self.field_names_state, command=self.field_names_cb).pack()
-        RoutesCheckFrame(self, canvas).pack()
-
-    def field_names_cb(self):
-        if self.field_names_state.get():
-            self.canvas.itemconfigure('field_name', state='normal')
-        else:
-            self.canvas.itemconfigure('field_name', state='hidden')
-
-
-class Vizualizer(Canvas):
+class MapFrame(Canvas):
     BASE = Path("./given").resolve()
 
     def __init__(self, root):
@@ -99,17 +80,17 @@ class Vizualizer(Canvas):
     def draw_treasure(self):
         # X-version
         self.create_line(x := self.treasure_place.x * self.field_size, y := self.treasure_place.x * self.field_size,
-                         x + self.field_size, y + self.field_size, fill='red', width=self.field_size // 36)
+                         x + self.field_size, y + self.field_size, fill='red', width=self.field_size // 36, tag='x')
         self.create_line(x := self.treasure_place.x * self.field_size,
                          self.treasure_place.x * self.field_size + self.field_size,
                          x + self.field_size, self.treasure_place.x * self.field_size, fill='red',
-                         width=self.field_size // 36)
+                         width=self.field_size // 36, tag='x')
 
         # pic-version
         half = self.field_size // 2
         self.create_image(self.treasure_place.x * self.field_size + half,
                           self.treasure_place.y * self.field_size + half,
-                          image=self.treasure_picture)
+                          image=self.treasure_picture, tag='lada')
 
     def draw_grids(self, color='black'):
         width = self.winfo_reqheight()
@@ -133,22 +114,3 @@ class Vizualizer(Canvas):
                 self.create_text(i * self.field_size + half, j * self.field_size + half, text=cell.field.nev,
                                  fill=self.field_font_colors[cell.field.nev], font=("sans-sheriff", betumeret),
                                  tag='field_name')
-
-
-class BaseFrame(Frame):
-    def __init__(self, root):
-        super().__init__(root)
-        Label(self, text='testing..').pack()
-        canvas = Vizualizer(self)
-        canvas.pack(side="left")
-        MapSettingFrame(self, canvas).pack(side="right")
-
-
-def start():
-    root = Tk()
-    BaseFrame(root).pack()
-    root.mainloop()
-
-
-if __name__ == "__main__":
-    start()

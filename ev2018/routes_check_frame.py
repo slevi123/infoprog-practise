@@ -4,7 +4,7 @@ from tkinter.ttk import LabelFrame, Checkbutton
 
 class RoutesCheckFrame(LabelFrame):
     def __init__(self, root, canvas):
-        super().__init__(root, text="Routes:")
+        super().__init__(root, text="Utak:")
         self.legrovidebb_state = IntVar()
         self.legrovidebb_state.set(1)
         self.canvas = canvas
